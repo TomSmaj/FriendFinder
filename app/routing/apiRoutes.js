@@ -6,20 +6,29 @@ module.exports = function(app) {
         res.json(friendData);
     });
 
-    app.post("/api/tables", function(req, res) {
-        friendData.push(req.body);
-        
-        /*code to find compatible match
-        ********************************
+    app.post("/api/friends", function(req, res) {
+        var nuData = req.body;
 
-        ********************************
-        */
-        var match = {
-            "name":"THis is the match",
-            "photo": "This is the match's photo",
-            "scores": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+        var currentBestMatch = {
+            score: 100,
+            index: 0
         };
-        res.json(match);
+
+        for(i = 0; i < friendData.length; i++){
+            var current = friendData[i];
+            var runningScore = 0;
+            for(j = 0; j < 10; j++){
+                runningScore += Math.abs(parseInt(current.scores[j], 10) - parseInt(nuData.scores[j], 10));
+            }
+            if(runningScore <= currentBestMatch.score){
+                currentBestMatch.score = runningScore;
+                currentBestMatch.index = i;
+            }
+        }
+        
+
+        friendData.push(nuData);
+        res.json(friendData[currentBestMatch.index]);
     });
 
 }
